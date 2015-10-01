@@ -1,12 +1,11 @@
-###### 12 Septembre 2014
+###### Alexandre GUYOT - 12 Septembre 2014
 
-Bonnes pratiques de journalisation Apache Camel
-===============================================
+
+# Bonnes pratiques de journalisation Apache Camel
 
 Apache Camel implémente le MDC ([Mapped Diagnostic Context](http://camel.apache.org/mdc-logging.html)) qui permet d'enrichir automatiquement les logs avec des données de contexte. De plus Apache Camel implémente un [composant log](http://camel.apache.org/log) randant extrèmement simple l'envoie de log. Ensemble ils peuvent fournir un socle de monitoring d'activité ne nécesitant aucun outil tierce ou base de donnée.
 
-Anti-Patterns de journalisation
-----------------------------------
+## Anti-Patterns de journalisation
 
 Avant toutes choses, vous pouvez prendre connaissance du très bon article sur [les anti-patterns de journalisation](http://gojko.net/2006/12/09/logging-anti-patterns/) écrit par Gojko Adzic. Cet article met en exergue comment assouvir les problèmes courant liés à la journalisation :
 
@@ -38,7 +37,7 @@ Note : Les composants Camel ont un nom de package qui leur est propre, ceci vous
 
 ### Données incomplètes dans les logs
 
-todo
+Celle-ci est selon moi l'erreur la plus répandu. Le meilleur exemple étant la requête SQL généré par hibernate ne comportant pas la valeur des paramètres.
 
 ### Différents séparateurs dans une même ligne de log
 
