@@ -1,7 +1,6 @@
-###### Oct. 13th, 2012
+###### 12 Septembre 2014
 
-Bonnes pratiques de journalisation Apache Camel
------------------------
+# Bonnes pratiques de journalisation Apache Camel
 
 Apache Camel implémente le MDC ([Mapped Diagnostic Context](http://camel.apache.org/mdc-logging.html)) qui permet d'enrichir automatiquement les logs avec des données de contexte. De plus Apache Camel implémente un [composant log](http://camel.apache.org/log) randant extrèmement simple l'envoie de log. Ensemble ils peuvent fournir un socle de monitoring d'activité ne nécesitant aucun outil tierce ou base de donnée.
 
@@ -21,11 +20,16 @@ Nous allons maintenant regarder comment ces anti-patterns peuvent être traiter 
 
 ### Un fichier unique
 
-todo
+Un même fichier pourra être utilisé par différente personne, par exemple un DBA ne sera pas intéressé par toutes les traces Java, le traitement des messages, les règles de filtrage etc. Ils veulent voir uniquement les requêtes SQL, leur paramètres et leur temps d'exécution. Les administrateurs systèmes eux sont un groupes d'individus devant lire un nombre très important de fichier obscure à la recherche  d'une information qui leur parle du type `Too many open files`. Ainsi les IOExceptions sont par définition la catégorie privilégier que ces personnes recherche au milieu d'un tas d'autre ligne de log pouvant être assimilié pour ces interlocuteurs à du chinois. 
+Ainsi il faut tiré parti des fonctionnalités fournit par le framework de log pour créer des filtres évolué aux routes de journalisation.
 
 ### Abscence de hiérarchie dans les catégories de log
 
-todo
+De nombreuse librairies n'utilisent qu'un sous ensemble de categorie de log si ce n'est une seule. Ceci est une idée complètement fausse, en y regardant de plus prêt on s'apperçoit que beaucoup de librairie utilise une cathégorie de log qui leur est propre (cf le framework Atomikos qui utilise à outrance la cathégorie du même nom : `atomikos`).
+Dans le cas d'Apache Camel et autre solution middleware, il faut considérer :
+
+* Utilisation de ses propres catégories, différent de celle d'un Framework, elles devront refléter une logique de médiation interne, sans détail technique. Effectivement même si vous êtes un dieu de la programmation des entrées de log peuvent vous induire en erreur si elles ne sont pas lié à une étape de processus bien définit.
+* 
 
 ### Données incomplètes dans les logs
 
