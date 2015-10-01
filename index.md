@@ -1,9 +1,11 @@
 ###### Oct. 13th, 2012
 
-Day 4: The royal palace
+Bonnes pratiques de journalisation Apache Camel
 -----------------------
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. In egestas velit sit amet magna auctor sit amet luctus velit dictum. Curabitur non risus id odio imperdiet venenatis nec a tellus. Aliquam at lorem sit amet erat dictum lobortis ac eget purus. Vivamus non euismod nisl. Integer ut auctor elit. Praesent quis pulvinar leo. Sed sit amet odio pulvinar nisi ullamcorper vehicula.
+Apache Camel implémente le MDC ([Mapped Diagnostic Context](http://camel.apache.org/mdc-logging.html)) qui permet d'enrichir automatiquement les logs avec des données de contexte. De plus Apache Camel implémente un [composant log](http://camel.apache.org/log) randant extrèmement simple l'envoie de log. Ensemble ils peuvent fournir un socle de monitoring d'activité ne nécesitant aucun outil tierce ou base de donnée.
+
+# Anti Patterns de journalisation
 
 Sed nisl lorem, molestie et dapibus non, adipiscing non est. Duis nec sapien quam, ac fermentum arcu. Donec blandit turpis lobortis erat vehicula elementum. Proin ut tortor eu nulla iaculis aliquam. Etiam ullamcorper, metus nec iaculis laoreet, orci metus lobortis ante, eget pretium tortor orci vel lorem. Duis vitae velit quam, nec sagittis dolor. Fusce tincidunt felis quis dolor eleifend eget porttitor tellus lobortis. Nulla id metus ut lorem imperdiet posuere imperdiet non diam. Ut imperdiet ullamcorper placerat. Nam porttitor pellentesque lectus id porttitor. Integer pretium, erat at sodales semper, metus urna venenatis leo, eu semper felis velit eget risus. Nulla quis est turpis, ut lacinia velit.
 ![](img/royal1.jpg)
