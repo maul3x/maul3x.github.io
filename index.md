@@ -29,7 +29,10 @@ De nombreuse librairies n'utilisent qu'un sous ensemble de categorie de log si c
 Dans le cas d'Apache Camel et autre solution middleware, il faut considérer :
 
 * Utilisation de ses propres catégories, différent de celle d'un Framework, elles devront refléter une logique de médiation interne, sans détail technique. Effectivement même si vous êtes un dieu de la programmation des entrées de log peuvent vous induire en erreur si elles ne sont pas lié à une étape de processus bien définit.
-* 
+* Assurer vous que tous les événements envoyé par votre processor, classe/bean, contexte ou route on la même structure de log. Ex : `org.maul3x.esb.finance` au lieu de `processor` ou `org.monpackage`. Soyer cohérent, créer une structure claire et s'y tenir (phase de conception capitale).
+* Ne pas faire confiance a un nom de thread et ne pas l'utiliser comme catégorie. Effectivement ceux-ci peuvent changer après une update du camel core ou d'un composant.
+
+Note : Les composants Camel ont un nom de package qui leur est propre, ceci vous permet de vous débarasser facilement de ceux dont les logs sont inutile pour votre besoin. 
 
 ### Données incomplètes dans les logs
 
