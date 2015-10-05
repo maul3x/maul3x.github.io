@@ -37,17 +37,26 @@ Note : Les composants Camel ont un nom de package qui leur est propre, ceci vous
 
 ### Données incomplètes dans les logs
 
-Celle-ci est selon moi l'erreur la plus répandu. Le meilleur exemple étant la requête SQL généré par hibernate ne comportant pas la valeur des paramètres.
+Celle-ci est selon moi l'erreur la plus répandu. Le meilleur exemple étant la requête SQL généré par hibernate ne comportant pas la valeur des paramètres. Pour obtenir l'ensemble des données relative à l'exécution d'une requête SQL dont les fameux paramètres, on est obligé d'utiliser 2 catégories de log différentes qui n'ont pas de lien d'héritage entre elles. Si le niveau de log TRACE vous convient pour le package org.hibernate, vous pouvez passer cette exemple.
+Si vous avez tous les parametres et les requêtes SQL ensemble dans les logs. Même si la ligne de log sera consomera un max de temps, vous serez sûr que vous verrez les paramètres pour cette requête SQL, et pas ceux d'une autre.
 
 ### Différents séparateurs dans une même ligne de log
 
-todo
+Pour ma part, j'aime les lignes de log complex avec des pipes, des points, des paranthèses, des crochets, etc. C'est tellement geek, on croirait pouvoir lire la matrice ! Bon pour nos yeux, en temps que développeurs averti, ça passe (même si ça fini toujours par piquer un peu) ! Mais pour utiliser des outils de parsing de log et pour les dinosaures de l'exploitation, c'est moins évident. Et comme c'est toujours aux développeurs (l'être le plus bat de l'échelle) d'obéir aux ordre, il va falloir rendre ça plus éléguant, avec un pattern de parsing simple et robuste, avec un séparateur unique. D'ailleurs quelques outils commerciaux nécessite un format particulier, construiser votre pattern en connaissance de cause, utilisé le séparateur privilégier par votre outils d'exploitation ou utilisez un appender différent. Même si cela semble redondant, garder un log claire, n'affecter pas votre pattern de log pour un besoin spécifique qui vous rendra au final la lecture plus complexe et vous fera donc perdre du temps en diagnostique.
 
 ### Les entrées de log multi-ligne
 
-todo
+Imaginé une requête SQL de 5 lignes, c'est pas si énorme ? Mais que ce passe t'il quand vous avez un contenu de 200Ko (ou plus) à logger régulièrement ? Votre système de fichier va vite empatire, et l'espace disque fondre comme neige au soleil à la surface de mercure. De manière plus générale, des entrées de logs sur plusieurs ligne complexifie le parsing, mais rendent aussi plus long et compliqué la lecture. Si vous avez besoin de conserver une trace de messages volumineux, ne le faite pas dans les fichiers de log, ce n'est pas l'endoit adapté. Privilégié un NMR si vous êtes en OSGi ou une file JMS avec un message store derrière (cf la [solution ActiveMQ](http://activemq.apache.org/amq-message-store.html)). Vous pouvez également contruire un mécanisme spécifique à votre besoin, en utilisant un design pattern d'asynchroniqme du type [wire tap](http://camel.apache.org/wire-tap) pour limiter tout impact sur la performance.
 
 ### L'écriture des logs après les actions bloquantes
+
+Le dernier Anti-pattern traité dans cet article. Souvener-vous que les logs sont produits par un bout de code qui devrait introduire une opération. Si vous n'êtes pas d'accord avec ce point, pensé à notifier les personnes sur votre façon de logger au préalable. La plus part d'entre elles s'attendent à trouver trace d'un traitement avant qu'une erreur arrive :
+
+1. Ce qu'on traite : Réception du message avec pour ID : ...
+2. L'erreur obtenu : Exception pendant la transformation du message
+3. L'action de recouvrement déclanché : Message transmit à la DeadLetter
+
+## Les bonnes pratiques de journalisations Apache Camel
 
 todo
 
