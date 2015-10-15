@@ -154,3 +154,20 @@ Il est préférable d'avoir une classe séparée :
     
 ### Utilisation du composant camel-log
 
+Ce composant offre plusieurs méthodes d'appel plus ou moins propre. Par exemple :
+
+    onException(Exception.class)
+        .log("Unexpected exception ${exception}")
+    .end()
+    
+Par défaut votre catégorie de log est donnée par votre routeId (ex : route4, route5, ...), chose qui n'aide pas à détecter la source de l'erreur. De plus le niveau de log n'est pas présent, par défaut il sera donc mit à `INFO`. Une utilisation plus propre serait donc :
+
+    onException(Exception.class)
+        // see, I have here a same category as route builder because it's on same level
+        .log(LoggingLevel.ERROR, "com.mycompnany.camel_toys.hr", "Unexpected exception ${exception}")
+    .end()
+
+## En conclusion
+
+Je pourrais continuer longtemps, mais cela finirait par perdre de son sens. Retener donc la chose suivante : Soyer raisonnable, utiliser des entrées de log courtes pour le monitoring de l'activité métier et garder les éloignés des problèmes techniques. Un simple `Message rejeter à cause d'une erreur de validation` est suffisant pour 95% des gens. Les 5% supplémentaire sont pour les développeurs qui trouveront leur bonneur dans un fichier de log séparrer.
+
