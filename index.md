@@ -79,7 +79,7 @@ Le MDC est une passerelle entre votre application et le framework de logging. Vo
 * camel.contextId
 
 Chaque variable de cette liste peut être utiliser dans votre format de log ou appender. Exemple :
-`log4j.appender.out.layout.ConversionPattern=%d{ABSOLUTE} | %-5.5p | %X{camelContextId} %X{bundle.version} | %X{routeId} %X{exchangeId} | %m%n`
+`log4j.appender.out.layout.ConversionPattern=%d{ABSOLUTE} | %-5.5p | %X{camel.contextId} %X{bundle.version} | %X{routeId} %X{exchangeId} | %m%n`
 
 Ce pattern poura produire la ligne de log suivante :
 `23:56:12,158 | INFO  | database-batch 2.8.0.fuse-01-06 | jms-inbound-hr | ID-Code-House-local-60526-1330335502920-25-33 | Received message`
@@ -87,15 +87,30 @@ Ce pattern poura produire la ligne de log suivante :
 Pour moi le fichier de configuration de log, doit être quelque chose d'extrèmement simple à lire :
 
     log4j.appender.integrationProcess=org.apache.log4j.sift.MDCSiftingAppender
-    log4j.appender.integrationProcess.key=camelContextId
+    log4j.appender.integrationProcess.key=camel.contextId
     log4j.appender.integrationProcess.default=unknown
     log4j.appender.integrationProcess.appender=org.apache.log4j.RollingFileAppender
     log4j.appender.integrationProcess.appender.layout=org.apache.log4j.PatternLayout
-    log4j.appender.integrationProcess.appender.layout.ConversionPattern=%d{ABSOLUTE} | %-5.5p | %X{routeId} %X{bundle.version} | %X{exchangeId} | %m%n
-    log4j.appender.integrationProcess.appender.file=${karaf.data}/log/mediation-$\\{camelContextId\\}.log
+    log4j.appender.integrationProcess.appender.layout.ConversionPattern=%d{ABSOLUTE} | %-5.5p | %X{camel.routeId} %X{bundle.version} | %X{camel.exchangeId} | %m%n
+    log4j.appender.integrationProcess.appender.file=${karaf.data}/log/mediation-$\\{camel.contextId\\}.log
     log4j.appender.integrationProcess.appender.append=true
     log4j.appender.integrationProcess.appender.maxFileSize=1MB
     log4j.appender.integrationProcess.appender.maxBackupIndex=10
     log4j.category.com.mycompnany.camel_toys.hr=INFO, integrationProcess
 
+Par défaut, quand le camel.contextId n'est pas définit, les entrées de log apparaiteront dans un fichier  data/log/mediation-unknown.log. Mais pour ceux qui ont bien un context id de définit, le fichier sera beaucoup plus explicite data/log/mediation-database-batch.log :
 
+    00:38:42,386 | INFO  | jms-inbound-hr 2.8.0.fuse-01-06 | ID-Code-House-local-51055-1330383822002-4-67 | Received message with business key XYZ.
+    00:38:43,387 | INFO  | jms-inbound-hr 2.8.0.fuse-01-06 | ID-Code-House-local-51055-1330383822002-4-67 | Saving message in database
+    00:38:44,388 | INFO  | jms-inbound-hr 2.8.0.fuse-01-06 | ID-Code-House-local-51055-1330383822002-4-67 | Processing of message with business key XYZ complete.
+    00:38:44,389 | INFO  | jms-inbound-hr 2.8.0.fuse-01-06 | ID-Code-House-local-51055-1330383822002-4-68 | Received message with business key ZYX.
+    00:38:45,390 | INFO  | jms-inbound-hr 2.8.0.fuse-01-06 | ID-Code-House-local-51055-1330383822002-4-68 | Saving message in database
+    00:38:45,391 | ERROR | jms-inbound-hr 2.8.0.fuse-01-06 | ID-Code-House-local-51055-1330383822002-4-68 | Processing of message with business key ZYX failed.
+
+Comme vous pouvez le voir, ce fichier ne contient que les entrées de log spécifique à un processus et il n'est pas influencé par des détails techniques. Une categorie est évincé car elle n'est pas constructive dans ce contexte (elle l'est pour le développeur mais pas pour l'exploitant). De plus vous n'avez pas à extraire une clé métier, vous pouvez simplement utiliser le header BreadcrumbId ou la property CorrelationId.
+
+### Les processors embarqué dans la route
+
+En Java DSL il est commun de voir un processor en plein milieu d'une route. C'est même inévitable dès qu'un développeur découvre cette possibilité, il ne cherche même plus le composant EIP adéquat et privilégit un bout de code bien moche au milieu de la route. C'est d'ailleurs une des raisons qui me fait préférer la modélisation de route en XML plutôt qu'en Java DSL, mais c'est une nouvelle fois un autre sujet.
+
+Si jamais vous venez à les ustiliser sacher que votre catégorie devra contenir un sign `$`, ex : `my.company.RouteBuilderExt$1`. Déjà n'implémenter pas de chose complexe dans ces boites magiques, mais si vous avez besoin d'un peu plus qu'une transformation de chaine de caractère ou l'ajout d'un simple header et que vous avez besoin de logger ça. Alors créer une classe séparrer et souvenez vous de la hiérarchie des catégorie de log, n'utiliser pas une RouteBuilder log catégori
