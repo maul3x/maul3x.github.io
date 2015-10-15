@@ -1,5 +1,7 @@
 # Designer une API Rest
 
+[cf](http://blog.octo.com/designer-une-api-rest/#uri) 
+
 ## Introduction
 Lorsque l’on souhaite concevoir une API, on est rapidement confronté à la problématique du « design d’API ». Ce point constitue un enjeu majeur, dans la mesure où une API mal conçue ne sera vraisemblablement peu ou pas utilisée par nos clients : les développeurs d’applications.
 
