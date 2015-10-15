@@ -85,17 +85,17 @@ Ce pattern poura produire la ligne de log suivante :
 `23:56:12,158 | INFO  | database-batch 2.8.0.fuse-01-06 | jms-inbound-hr | ID-Code-House-local-60526-1330335502920-25-33 | Received message`
 
 Pour moi le fichier de configuration de log, doit être quelque chose d'extrèmement simple à lire :
- log4j.appender.integrationProcess=org.apache.log4j.sift.MDCSiftingAppender
- log4j.appender.integrationProcess.key=camelContextId
- log4j.appender.integrationProcess.default=unknown
- log4j.appender.integrationProcess.appender=org.apache.log4j.RollingFileAppender
- log4j.appender.integrationProcess.appender.layout=org.apache.log4j.PatternLayout
- log4j.appender.integrationProcess.appender.layout.ConversionPattern=%d{ABSOLUTE} | %-5.5p | %X{routeId} %X{bundle.version} | %X{exchangeId} | %m%n
- log4j.appender.integrationProcess.appender.file=${karaf.data}/log/mediation-$\\{camelContextId\\}.log
- log4j.appender.integrationProcess.appender.append=true
- log4j.appender.integrationProcess.appender.maxFileSize=1MB
- log4j.appender.integrationProcess.appender.maxBackupIndex=10
- 
- log4j.category.com.mycompnany.camel_toys.hr=INFO, integrationProcess`
+
+    log4j.appender.integrationProcess=org.apache.log4j.sift.MDCSiftingAppender
+    log4j.appender.integrationProcess.key=camelContextId
+    log4j.appender.integrationProcess.default=unknown
+    log4j.appender.integrationProcess.appender=org.apache.log4j.RollingFileAppender
+    log4j.appender.integrationProcess.appender.layout=org.apache.log4j.PatternLayout
+    log4j.appender.integrationProcess.appender.layout.ConversionPattern=%d{ABSOLUTE} | %-5.5p | %X{routeId} %X{bundle.version} | %X{exchangeId} | %m%n
+    log4j.appender.integrationProcess.appender.file=${karaf.data}/log/mediation-$\\{camelContextId\\}.log
+    log4j.appender.integrationProcess.appender.append=true
+    log4j.appender.integrationProcess.appender.maxFileSize=1MB
+    log4j.appender.integrationProcess.appender.maxBackupIndex=10
+    log4j.category.com.mycompnany.camel_toys.hr=INFO, integrationProcess
 
 
