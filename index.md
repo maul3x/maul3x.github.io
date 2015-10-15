@@ -56,10 +56,46 @@ Le dernier Anti-pattern traité dans cet article. Souvener-vous que les logs son
 2. L'erreur obtenu : Exception pendant la transformation du message
 3. L'action de recouvrement déclanché : Message transmit à la DeadLetter
 
+
+
 ## Les bonnes pratiques de journalisations Apache Camel
 
-todo
+Apache Camel utilise `slf4j` comme librairie de logging. C'est une facade générique pour de nomreuses librairies de logging. Vous n'avez pas à l'utiliser directement dans vos projet, vous préfererez un librairie de plus haut niveau comme `Log4j` ou `commons-logging`, mais c'est toujours intéressant d'avoir moins de dépendance et un classpath épuré. Nous n'allons pas critiquer le choix de `slf4j` ici, ce n'est pas l'objectif, donc inutile d'ouvrir le débat. 
 
+### Nommer vos éléments
 
+Si vous avez déjà vécu l'exploitation d'un outil middleware en prod, vous voyer l'intérêt. Pour les autres (les barbus du code), vous savez qu'il est impossible de connecter votre IDE et débuggeur favori sur un environnement de prod, ainsi le seul lien pour savoir quel éléments crie à l'aide dans vos log, c'est de leur donner un petit nom bien parlant. Voilà pourquoi tout Camel context doit avoir un nom. D'ailleurs du point de vue des exploitants : tout doit avoir un nom précis. Si vous avez une console JMX pour faire quelque tache d'administration, le nommage natif de camel (ex : 123-camel-45) ne vous sera d'aucune aide. TODO ajouter une image pour illustrer !
+
+### Utilisé le MDC (Mapped Diagnostic Context)
+
+Le MDC est une passerelle entre votre application et le framework de logging. Voyer le comme un thread local. Vous pouvez définir des variables spécifique à votre aplication et les réutiliser pour créer un format de log riche ou encore séparrer vos fichier de log par application ou cas d'usage. Cette fonctionalité est désactivé par défaut dans Camel, mais une simple properties permet de [l'activer](http://camel.apache.org/mdc-logging.html). Donnant ainsi accès à quelque variable interne de Camel :
+
+* camel.exchangeId
+* camel.messageId
+* camel.correlationId
+* camel.transactionKey
+* camel.routeId
+* camel.breadcrumbId
+* camel.contextId
+
+Chaque variable de cette liste peut être utiliser dans votre format de log ou appender. Exemple :
+`log4j.appender.out.layout.ConversionPattern=%d{ABSOLUTE} | %-5.5p | %X{camelContextId} %X{bundle.version} | %X{routeId} %X{exchangeId} | %m%n`
+
+Ce pattern poura produire la ligne de log suivante :
+`23:56:12,158 | INFO  | database-batch 2.8.0.fuse-01-06 | jms-inbound-hr | ID-Code-House-local-60526-1330335502920-25-33 | Received message`
+
+Pour moi le fichier de configuration de log, doit être quelque chose d'extrèmement simple à lire :
+`log4j.appender.integrationProcess=org.apache.log4j.sift.MDCSiftingAppender
+log4j.appender.integrationProcess.key=camelContextId
+log4j.appender.integrationProcess.default=unknown
+log4j.appender.integrationProcess.appender=org.apache.log4j.RollingFileAppender
+log4j.appender.integrationProcess.appender.layout=org.apache.log4j.PatternLayout
+log4j.appender.integrationProcess.appender.layout.ConversionPattern=%d{ABSOLUTE} | %-5.5p | %X{routeId} %X{bundle.version} | %X{exchangeId} | %m%n
+log4j.appender.integrationProcess.appender.file=${karaf.data}/log/mediation-$\\{camelContextId\\}.log
+log4j.appender.integrationProcess.appender.append=true
+log4j.appender.integrationProcess.appender.maxFileSize=1MB
+log4j.appender.integrationProcess.appender.maxBackupIndex=10
+ 
+log4j.category.com.mycompnany.camel_toys.hr=INFO, integrationProcess`
 
 
