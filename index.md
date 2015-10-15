@@ -113,4 +113,44 @@ Comme vous pouvez le voir, ce fichier ne contient que les entrées de log spéci
 
 En Java DSL il est commun de voir un processor en plein milieu d'une route. C'est même inévitable dès qu'un développeur découvre cette possibilité, il ne cherche même plus le composant EIP adéquat et privilégit un bout de code bien moche au milieu de la route. C'est d'ailleurs une des raisons qui me fait préférer la modélisation de route en XML plutôt qu'en Java DSL, mais c'est une nouvelle fois un autre sujet.
 
-Si jamais vous venez à les ustiliser sacher que votre catégorie devra contenir un sign `$`, ex : `my.company.RouteBuilderExt$1`. Déjà n'implémenter pas de chose complexe dans ces boites magiques, mais si vous avez besoin d'un peu plus qu'une transformation de chaine de caractère ou l'ajout d'un simple header et que vous avez besoin de logger ça. Alors créer une classe séparrer et souvenez vous de la hiérarchie des catégorie de log, n'utiliser pas une RouteBuilder log catégori
+Si jamais vous venez à les ustiliser sacher que votre catégorie devra contenir un sign `$`, ex : `my.company.RouteBuilderExt$1`. Déjà n'implémenter pas de chose complexe dans ces boites magiques, mais si vous avez besoin d'un peu plus qu'une transformation de chaine de caractère ou l'ajout d'un simple header et que vous avez besoin de logger ça. Alors créer une classe séparrer et souvenez vous de la hiérarchie des catégorie de log, n'utiliser pas une catégorie de log RouteBuilder. Si l'implémentation de la logique du processor prend la magorité des lignes de code du constructeur de la route, séparrer le. Même chose pour les strategies d'aggregation et les extenstion `org.apache.camel.spi`.
+
+    package com.mycompnany.camel_toys.hr;
+    public class Route extends RouteBuilder {
+      
+        Log log = LogFactory.getLog(Route.class);
+      
+        @Override
+        public void configure() throws Exception {
+            from("")
+                .onException(Exception.class)
+                    .process(new Processor() {
+                        @Override
+                        public void process(Exchange exchange) throws Exception {
+                            org.apache.camel.Message out = exchange.getOut();
+                            out.setHeader(org.apache.cxf.message.Message.RESPONSE_CODE, new Integer(500));
+                            log.error("Unexpected exception", exchange.getException());
+                        }
+                    }
+                })
+                .end()
+                .to("")
+        }
+    }
+    
+Il est préférable d'avoir une classe séparée :
+
+    package com.mycompnany.camel_toys.hr; // or .processor if we have few or logic is complex
+    public class ExceptionProcessor implements Processor {
+        // slf4j!
+        private Log log = LoggerFactory.getLogger(ExceptionProcessor.class); 
+        @Override
+        public void process(Exchange exchange) throws Exception {
+            org.apache.camel.Message out = exchange.getOut();
+            out.setHeader(org.apache.cxf.message.Message.RESPONSE_CODE, new Integer(500));
+            log.error("Unexpected exception", exchange.getException());
+        }
+    }
+    
+### Utilisation du composant camel-log
+
